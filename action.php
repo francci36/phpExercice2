@@ -44,20 +44,32 @@ switch($_GET['e'])
 
     case 'upload':
 
-        if(isset($_POST['submit']))
-        {
-            // On vérifie si un fichier a été envoyé
-            if(is_uploaded_file($_FILES['fichier']['tmp_name']))
-            {
-               $etat_fichier = uploadFichier($_FILES['fichier']);
-               if($etat_fichier)
-               {
-                    $message = 'Fichier envoyé avec succès';
-                    header('location:prive.php?message='.urlencode($message));
-               }
+        if( isset($_POST['submit']) ) {
+    
+            $message = "Fichier(s) envoyé(s) avec suscès : ";
+            
+            // upload le 1er fichier
+            if( is_uploaded_file( $_FILE['fichier']['tmp_name']) ) {
+                $etat_fichier = uploadFichier( $_FILE['fichier'] );
+                if( $etat_fichier ) {
+                    $message .= $_FILE['fichier']['name'] .' ';
+                }
             }
+            
+            // upload le 2nd fichier
+            if( is_uploaded_file( $_FILE['fichier2']['tmp_name']) ) {
+                $etat_fichier = uploadFichier( $_FILE['fichier2'] );
+                if( $etat_fichier ) {
+                    $message .= $_FILE['fichier2']['name'] ;
+                }
+            }
+            
+            
+            // on retourne vers l'utilisateur
+            header( 'location:prive.php?message='.urlencode($message) );
+            
         }
+        
 
     break;
 }
-?>

@@ -44,38 +44,69 @@ function verifConnect($login,$password)
         return false;
     }
 }
-$extensions = array('.pdf','.png','.jpg','.mp4','.gif');
-function uploadFichier($fichier)
+
+// globale - tableau listing des types de fichiers autorisés
+$fichiers_extensions_autorises = array('.pdf','.png','.jpg','.mp4','.gif');
+
+
+/**
+ * 
+ * 
+ * 
+ * @global array $fichiers_extensions_autorises
+ * @param array $fichier  ['name', 'tmp_name']
+ * @return boolean
+ */
+function uploadFichier( $fichier )
 {
-    global $extensions;
-    $verif_extension = strrchr($fichier['name'],'.');
-    if(in_array($verif_extension,$extensions))
-    {
-        // On vérifie si le dossier de l'user existe
-        if(!is_dir('upload/'.$_COOKIE['login']))
-        {
-            // Si il existe pas on le créer
-            mkdir('upload/'.$_COOKIE['login']);
-        }
-        // On transfère notre fichier dans son dossier
-        if(move_uploaded_file($fichier['tmp_name'],'upload/'.$_COOKIE['login'].'/'.$fichier['name']))
-        {
-            return true;
-        }
+    global $fichiers_extensions_autorises;
+    
+    
+    // fabrique le dossier de destination en fonction de l'user connecté
+    // Exemple : ...../htdocs/upload/joseph
+    $destination = $_SERVER['HOME'] . '/upload/' . $_COOKIE['login'];
+    
+    // récup l'extension du fichier  $fichier
+    // Exemple : dossier/doosier/photo-mylene.jpg  >>> .jpg
+    $fichier_extension = strrchr( $fichier['name'], '.' );
+    
+    
+    
+    // est ce un fichier autorisé ?
+    if( in_array($fichier_extension, $fichiers_extensions_autorises) == false )
+        return false;
+    
+    
+    // est ce que le dossier de l'user existe pour y déplaer ce nouveau fichier uploadé ?
+    if( !is_dir($destination)  ) {
+        // Comme le dossier n'existe pas, on le crée
+        mkdir( $destination );
     }
-    // récupère le nom original du fichier
-$extensions = $fichier['name'];
-
-// récupère l'extension du fichier
-$extensions= pathinfo($extensions, PATHINFO_EXTENSION);
-
-// génère un nom de fichier aléatoire
-$randomFileName = rand() . '.' . $extensions;
-
-// définit le nouveau chemin de destination pour le fichier
-$destination = 'upload/' . $randomFileName;
-
-// déplace le fichier téléchargé vers la destination
-move_uploaded_file($fichier['name']['tmp_name'], $destination);
+    
+    
+    
+    // créer un nom aléatoire pour ce $fichier
+    // Exemple : 09aj245.jpg
+    $nouveauNom = uniqid() . $fichier_extension;
+    
+    
+    // déplacer le fichier dans le dossier de l'user
+    // Exemple : upload/joseph/a987348DHZJKD.jpg
+    $deplacer = $destination . '/' . $nouveauNom;
+    
+    
+    // déplacement du fichier
+    if( move_uploaded_file($fichier['tmp_name'], $deplacer)  ) {
+        
+        // déplacé avec succès
+        return true;
+    }
+    
+    
+    
+    return false;
+    
+   
 }
-?>
+
+

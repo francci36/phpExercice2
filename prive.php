@@ -23,6 +23,8 @@ if($_SESSION['connect'] != 1 && (empty($_COOKIE['login']) || empty($_COOKIE['pas
    <form method="post" action="action.php?e=upload" enctype="multipart/form-data">
     <label for="fichier">Ajouter un fichier</label>
     <input type="file" name="fichier" />
+    <label for="fichier2">Ajouter un fichier</label>
+    <input type="file" name="fichier2" />
     <br />
     <button type="submit" name="submit">Envoyer</button>
    </form>
